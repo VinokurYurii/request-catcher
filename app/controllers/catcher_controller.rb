@@ -16,6 +16,11 @@ class CatcherController < ApplicationController
     # @clientC = RequestCookie.new.inspect
     #<Request id: nil, query_string: nil, method: nil, remote_ip: nil, scheme: nil, created_at: nil>
     # render :json => clientH
-    # render :json => {name: "John"}
+    render :json => {path: params[:path],
+                     scheme: params[:scheme],
+                     remote_ip: request.remote_ip,
+                     method: request.method,
+                     headers: request.headers.instance_variables,
+                     params: params.inspect}
   end
 end
