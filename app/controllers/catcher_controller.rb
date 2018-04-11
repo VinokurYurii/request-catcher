@@ -51,9 +51,8 @@ class CatcherController < ApplicationController
     end
 
     if request_scheme == 'requests' && request_method.upcase == 'GET'
-      @requests = getRequestHash params[:path]
+      @requests = getRequestData params[:path]
       return
-      # render :json => getRequestHash
     else
       render :status => 201, :json => {:status => 'success'}
     end
@@ -61,12 +60,11 @@ class CatcherController < ApplicationController
 
   private
 
-    def getRequestHash(path)
-
-      requests = Request.where("query_string = ?", path)
-                     .left_outer_joins(:request_headers, :request_params, :request_cookies)
-                     .distinct
-
-      return requests
+    def getRequestData(path)
+      Request.where("query_string = ?", path)
+          .left_outer_joins(:request_headers, :request_params, :request_cookies)
+          .distinct
+          .order('requests.id')
+          .reverse_order
     end
 end
