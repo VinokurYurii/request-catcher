@@ -1,0 +1,71 @@
+//= require cable
+//= require_self
+//= require_tree .
+
+this.App = {};
+
+App.cable = ActionCable.createConsumer();
+
+App.catcher = App.cable.subscriptions.create({ channel: 'CatcherChannel', path: window.location.pathname.split('/')[1] }, {
+    received: function (data)
+    {
+        $('#request-info').append(this.prepareCatchedRequestString(data));
+    },
+
+    prepareCatchedRequestString: function (data)
+    {
+        const reqDate = new Date(data.request.created_at)
+        let requestInfo = '<div class="row"><div class="col-md-3"><b>Created Date:</b> ';
+        requestInfo += reqDate.getHours() + ':' + reqDate.getMinutes() + ':' + reqDate.getSeconds() + ' ' +
+                       reqDate.getDate() + '-' + (reqDate.getMonth() + 1) + '-' + reqDate.getFullYear();
+        requestInfo += '</div><div class="col-md-3"><b>Remote IP:</b> ';
+        requestInfo += data.request.remote_ip;
+        requestInfo += '</div><div class="col-md-3"><b>Request Method:</b> ';
+        requestInfo += data.request.method;
+        requestInfo += '</div><div class="col-md-3"><b>Request scheme:</b> ';
+        requestInfo += data.request.scheme;
+        requestInfo += '</div></div></div>';
+
+        requestInfo += '<div class="row"><div class="col-md-4"><button class="btn btn-primary" ' +
+            'type="button" data-toggle="collapse" data-target="#headerCollapse_' + data.request.id + '" ' +
+            'aria-expanded="false" aria-controls="headerCollapse_' + data.request.id + '">' + 'Headers</button>' +
+            '<div class="collapse multi-collapse" id="headerCollapse_' + data.request.id + '">' +
+            '<div class="card card-body">';
+        requestInfo += this.prepareTableString(data.requestHeaders);
+        requestInfo += '</div></div></div>';
+
+
+        requestInfo += '<div class="col-md-4"><button class="btn btn-primary" ' +
+            'type="button" data-toggle="collapse" data-target="#paramCollapse_' + data.request.id + '" ' +
+            'aria-expanded="false" aria-controls="paramCollapse_' + data.request.id + '">' + 'Params</button>' +
+            '<div class="collapse multi-collapse" id="paramCollapse_' + data.request.id + '">' +
+            '<div class="card card-body">';
+        requestInfo += this.prepareTableString(data.requestParams);
+        requestInfo += '</div></div></div>';
+
+        requestInfo += '<div class="col-md-4"><button class="btn btn-primary" ' +
+            'type="button" data-toggle="collapse" data-target="#cookieCollapse_' + data.request.id + '" ' +
+            'aria-expanded="false" aria-controls="cookieCollapse_' + data.request.id + '">' + 'Cookies</button>' +
+            '<div class="collapse multi-collapse" id="cookieCollapse_' + data.request.id + '">' +
+            '<div class="card card-body">';
+        requestInfo += this.prepareTableString(data.requestCookies);
+        requestInfo += '</div></div></div></div><br>';
+
+        return requestInfo;
+    },
+
+    prepareTableString: function(data)
+    {
+        let tableString = '<table class="table"><thead><tr><th>Key</th><th>Value</th></tr></thead><tbody>';
+        data.forEach(function (element) {
+            tableString += '<tr><td>';
+            tableString += element.key;
+            tableString += '</td><td>';
+            tableString += element.value;
+            tableString += '</td></tr>';
+        });
+        tableString += '</tbody></table>';
+
+        return tableString;
+    }
+});

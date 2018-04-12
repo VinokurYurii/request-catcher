@@ -1,0 +1,16 @@
+<table class="table">
+  <thead>
+  <tr>
+    <th>Key</th>
+    <th>Value</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% data_array.each do |data| %>
+    <tr>
+      <td><%= data.key %></td>
+      <td><%= data.value %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

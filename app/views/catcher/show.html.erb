@@ -1,0 +1,14 @@
+<h3><%= @requests[0].query_string %></h3>
+
+<div id="request-info">
+
+<% @requests.each do |request| %>
+  <%= render partial: 'data_table',
+             locals: {request: request,
+                      headers: request.request_headers,
+                      params: request.request_params,
+                      cookies: request.request_cookies} %>
+  <br>
+<% end %>
+
+</div>

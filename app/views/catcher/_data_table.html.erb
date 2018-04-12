@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col-md-3">
+    <b>Created Date:</b> <%= request.created_at.strftime('%k:%M:%S %-d-%-m-%Y') %>
+  </div>
+  <div class="col-md-3">
+    <b>Remote IP:</b> <%= request.remote_ip %>
+  </div>
+  <div class="col-md-3">
+    <b>Request Method:</b> <%= request.method %>
+  </div>
+  <div class="col-md-3">
+    <b>Request scheme:</b> <%= request.scheme %>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <button class="btn btn-primary"
+            type="button"
+            data-toggle="collapse"
+            data-target="#headerCollapse_<%= request.id %>"
+            aria-expanded="false"
+            aria-controls="headerCollapse_<%= request.id %>">
+      Headers
+    </button>
+    <div class="collapse multi-collapse" id="headerCollapse_<%= request.id %>">
+      <div class="card card-body">
+        <%= render partial: 'key_value_table', locals: {data_array: headers} %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <button class="btn btn-primary"
+            type="button"
+            data-toggle="collapse"
+            data-target="#paramCollapse_<%= request.id %>"
+            aria-expanded="false"
+            aria-controls="paramCollapse_<%= request.id %>">
+      Params
+    </button>
+    <div class="collapse multi-collapse" id="paramCollapse_<%= request.id %>">
+      <div class="card card-body">
+        <%= render partial: 'key_value_table', locals: {data_array: params} %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <button class="btn btn-primary"
+            type="button"
+            data-toggle="collapse"
+            data-target="#cookieCollapse_<%= request.id %>"
+            aria-expanded="false"
+            aria-controls="cookieCollapse_<%= request.id %>">
+      Cookies
+    </button>
+    <div class="collapse multi-collapse" id="cookieCollapse_<%= request.id %>">
+      <div class="card card-body">
+        <%= render partial: 'key_value_table', locals: {data_array: cookies} %>
+      </div>
+    </div>
+  </div>
+</div>

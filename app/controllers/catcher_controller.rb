@@ -1,6 +1,11 @@
 class CatcherController < ApplicationController
   protect_from_forgery prepend: false
-  def index
+
+  def show
+    @requests = getRequestData params[:path]
+  end
+
+  def catch_request
 
     request_scheme = params[:scheme]
     request_method = request.method
@@ -29,33 +34,37 @@ class CatcherController < ApplicationController
         :remote_ip    => request.remote_ip,
         :scheme       => request_scheme)
 
+    params_objects = []
     request_params.each do |key, value|
-      RequestParam.create(
+      params_objects.push(RequestParam.create(
           request_id: client_request.id,
           key: key,
-          value: value.to_s)
+          value: value.to_s))
     end
 
+    headers_objects = []
     request_headers.each do |key, value|
-      RequestHeader.create(
+      headers_objects.push(RequestHeader.create(
           request_id: client_request.id,
           key: key,
-          value: value.to_s)
+          value: value.to_s))
     end
 
+    cookies_objects = []
     request_cookies.each do |key, value|
-      RequestCookie.create(
+      cookies_objects.push(RequestCookie.create(
           request_id: client_request.id,
           key: key,
-          value: value.to_s)
+          value: value.to_s))
     end
 
-    if request_scheme == 'requests' && request_method.upcase == 'GET'
-      @requests = getRequestData params[:path]
-      return
-    else
-      render :status => 201, :json => {:status => 'success'}
-    end
+    ActionCable.server.broadcast "catcher_#{params[:path]}",
+                                 :request => client_request,
+                                 :requestHeaders => headers_objects,
+                                 :requestCookies => cookies_objects,
+                                 :requestParams => params_objects
+
+    render :status => 201, :json => {:status => 'success'}
   end
 
   private
