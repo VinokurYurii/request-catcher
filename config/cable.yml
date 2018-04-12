@@ -1,11 +1,10 @@
 development:
-  adapter: redis
-  url: redis://redistogo:d12706baeb68b4c676b2cb5cf36b2519@albacore.redistogo.com:9754/
+  adapter: async
 
 test:
   adapter: async
 
 production:
   adapter: redis
-  url: redis://localhost:6379/1
+  url: redis://redistogo:d12706baeb68b4c676b2cb5cf36b2519@albacore.redistogo.com:9754/
   channel_prefix: requests-trap_production
