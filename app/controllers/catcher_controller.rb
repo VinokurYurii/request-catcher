@@ -2,7 +2,8 @@ class CatcherController < ApplicationController
   protect_from_forgery prepend: false
 
   def show
-    @requests = getRequestData params[:path]
+    @path = params[:path]
+    @requests = getRequestData @path
   end
 
   def catch_request
