@@ -1,5 +1,6 @@
 development:
-  adapter: async
+  adapter: redis
+  url: redis://redistogo:d12706baeb68b4c676b2cb5cf36b2519@albacore.redistogo.com:9754/
 
 test:
   adapter: async
