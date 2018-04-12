@@ -74,6 +74,5 @@ class CatcherController < ApplicationController
           .left_outer_joins(:request_headers, :request_params, :request_cookies)
           .distinct
           .order('requests.id')
-          .reverse_order
     end
 end
