@@ -6,7 +6,7 @@ this.App = {};
 
 App.cable = ActionCable.createConsumer();
 
-App.catcher = App.cable.subscriptions.create({ channel: 'CatcherChannel', path: window.location.pathname.split('/')[1] }, {
+App.catcher = App.cable.subscriptions.create({ channel: 'CatcherChannel', path: formChanelString() }, {
     received: function (data)
     {
         $('#request-info').append(this.prepareCatchedRequestString(data));
@@ -69,3 +69,31 @@ App.catcher = App.cable.subscriptions.create({ channel: 'CatcherChannel', path: 
         return tableString;
     }
 });
+
+function formChanelString()
+{
+    const path = window.location.pathname.split('/')[1];
+    const fullSearchString = window.location.search;
+    let method = 'all';
+    let ip = 'all';
+
+    if (fullSearchString !== '') {
+      const shiftedSearchString = fullSearchString.slice(1);
+      const searchStrings = shiftedSearchString.split('&');
+
+      for (let i = 0; i < searchStrings.length; i++) {
+          let paramTuple = searchStrings[i].split('=');
+          switch (paramTuple[0]) {
+              case 'method':
+                  method = paramTuple[1];
+                  break;
+              case 'ip':
+                  ip = paramTuple[1]
+                  break
+          }
+      }
+    }
+
+    return path;
+<!--    return [path, method, ip].join('_');-->
+}

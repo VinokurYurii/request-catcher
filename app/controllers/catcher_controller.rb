@@ -2,8 +2,12 @@ class CatcherController < ApplicationController
   protect_from_forgery prepend: false
 
   def show
-    @path = params[:path]
-    @requests = getRequestData @path
+    @ip               = params[:ip] || 'all'
+    @method           = params[:method] || 'all'
+    @path             = params[:path]
+    @requests         = getRequestData @path, @ip, @method
+    @requests_methods = Request.distinct.pluck(:method)
+    @requests_ips     = Request.distinct.pluck(:remote_ip)
   end
 
   def catch_request
@@ -70,10 +74,16 @@ class CatcherController < ApplicationController
 
   private
 
-    def getRequestData(path)
-      Request.where("query_string = ?", path)
-          .left_outer_joins(:request_headers, :request_params, :request_cookies)
-          .distinct
+    def getRequestData(path, ip, method)
+      requestRequest = Request.where("query_string = ?", path)
+
+      if ip != 'all'
+        requestRequest.where!("remote_ip = ?", ip)
+      end
+      if method != 'all'
+        requestRequest.where!("method = ?", method.upcase)
+      end
+      requestRequest.includes(:request_headers, :request_params, :request_cookies)
           .order('requests.id')
     end
 end

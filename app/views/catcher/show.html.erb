@@ -1,14 +1,62 @@
 <h3><%= @path %></h3>
+<h1><%= @a %></h1>
+<br>
+<h1><%= @b %></h1>
+<form method="get">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="method">Select list:</label>
+        <select class="form-control" id="method" name="method">
+          <option value="all">All</option>
+          <% @requests_methods.each do |requests_method| %>
+            <option value="<%= requests_method.downcase %>"
+                    <%= @method.downcase == requests_method.downcase ? 'selected' : '' %>
+            >
+              <%= requests_method.upcase %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="ip">Select list:</label>
+        <select class="form-control" id="ip" name="ip">
+          <option value="all">All</option>
+          <% @requests_ips.each do |requests_ip| %>
+            <option value="<%= requests_ip %>"
+                    <%= @ip == requests_ip ? 'selected' : '' %>
+            >
+              <%= requests_ip %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3">
 
+    </div>
+    <div class="col-md-3">
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success">Search</button>
+    </div>
+  </div>
+</form>
+<br>
 <div id="request-info">
 
-<% @requests.each do |request| %>
-  <%= render partial: 'data_table',
-             locals: {request: request,
-                      headers: request.request_headers,
-                      params: request.request_params,
-                      cookies: request.request_cookies} %>
-  <br>
-<% end %>
+  <% @requests.each do |request| %>
+    <%= render partial: 'data_table',
+               locals: {request: request,
+                        headers: request.request_headers,
+                        params: request.request_params,
+                        cookies: request.request_cookies} %>
+    <br>
+  <% end %>
 
 </div>
