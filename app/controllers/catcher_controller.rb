@@ -5,7 +5,10 @@ class CatcherController < ApplicationController
     @ip               = params[:ip] || 'all'
     @method           = params[:method] || 'all'
     @path             = params[:path]
-    @requests         = getRequestData @path, @ip, @method
+    @request_uri      = params[:request_uri] || ''
+    @request_uri      = params[:request_uri] || ''
+    @order            = params[:order] == 'DESC' ? 'DESC' : 'ASC'
+    @requests         = getRequestData @path, @ip, @method, @request_uri, @order
     @requests_methods = Request.distinct.pluck(:method)
     @requests_ips     = Request.distinct.pluck(:remote_ip)
   end
@@ -74,7 +77,7 @@ class CatcherController < ApplicationController
 
   private
 
-    def getRequestData(path, ip, method)
+    def getRequestData(path, ip, method, request_uri, order)
       requestRequest = Request.where("query_string = ?", path)
 
       if ip != 'all'
@@ -83,7 +86,15 @@ class CatcherController < ApplicationController
       if method != 'all'
         requestRequest.where!("method = ?", method.upcase)
       end
-      requestRequest.includes(:request_headers, :request_params, :request_cookies)
-          .order('requests.id')
+      if request_uri != ''
+        requestRequest
+            .joins(:request_headers)
+            .where("key = ? AND lower(value) LIKE ?", 'REQUEST_URI', "%#{request_uri.downcase}%")
+            .includes(:request_params, :request_cookies)
+            .order("created_at #{order}")
+      else
+        requestRequest.includes(:request_headers, :request_params, :request_cookies)
+            .order("created_at #{order}")
+      end
     end
 end

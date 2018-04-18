@@ -9,7 +9,12 @@ App.cable = ActionCable.createConsumer();
 App.catcher = App.cable.subscriptions.create({ channel: 'CatcherChannel', path: formChanelString() }, {
     received: function (data)
     {
-        $('#request-info').append(this.prepareCatchedRequestString(data));
+        if (getGetParams('order') === 'ASC') {
+            $('#request-info').append(this.prepareCatchedRequestString(data));
+        }
+        else {
+            $('#request-info').prepend(this.prepareCatchedRequestString(data));
+        }
     },
 
     prepareCatchedRequestString: function (data)
@@ -73,27 +78,45 @@ App.catcher = App.cable.subscriptions.create({ channel: 'CatcherChannel', path: 
 function formChanelString()
 {
     const path = window.location.pathname.split('/')[1];
+    return path;
+}
+
+function getGetParams(needles)
+{
     const fullSearchString = window.location.search;
-    let method = 'all';
-    let ip = 'all';
-
-    if (fullSearchString !== '') {
-      const shiftedSearchString = fullSearchString.slice(1);
-      const searchStrings = shiftedSearchString.split('&');
-
-      for (let i = 0; i < searchStrings.length; i++) {
-          let paramTuple = searchStrings[i].split('=');
-          switch (paramTuple[0]) {
-              case 'method':
-                  method = paramTuple[1];
-                  break;
-              case 'ip':
-                  ip = paramTuple[1]
-                  break
-          }
-      }
+    let paramsObject = {
+        method: 'all',
+        ip: 'all',
+        request_uri: '',
+        order: ''
     }
 
-    return path;
-<!--    return [path, method, ip].join('_');-->
+    if (fullSearchString !== '') {
+        const shiftedSearchString = fullSearchString.slice(1);
+        const searchStrings = shiftedSearchString.split('&');
+
+        for (let i = 0; i < searchStrings.length; i++) {
+            let paramTuple = searchStrings[i].split('=');
+            switch (paramTuple[0]) {
+                case 'method':
+                    paramsObject.method = paramTuple[1];
+                    break;
+                case 'ip':
+                    paramsObject.ip = paramTuple[1]
+                    break
+                case 'request_uri':
+                    paramsObject['request_uri'] = paramTuple[1]
+                    break
+                case 'order':
+                    paramsObject.order = paramTuple[1]
+                    break
+            }
+        }
+    }
+
+    if (needles) {
+        return paramsObject[needles];
+    }
+
+    return paramsObject;
 }

@@ -1,7 +1,4 @@
 <h3><%= @path %></h3>
-<h1><%= @a %></h1>
-<br>
-<h1><%= @b %></h1>
 <form method="get">
   <div class="row">
     <div class="col-md-3">
@@ -35,10 +32,25 @@
       </div>
     </div>
     <div class="col-md-3">
-
+      <label for="request-uri">REQUEST URI</label>
+      <input class="form-control" id="request-uri" name="request_uri" value="<%= @request_uri %>">
     </div>
     <div class="col-md-3">
-
+      <div class="form-group">
+        <label for="order">Select list:</label>
+        <select class="form-control" id="order" name="order">
+          <option value="DESC"
+                  <%= @order == 'DESC' ? 'selected' : '' %>
+          >
+            DESC
+          </option>
+          <option value="ASC"
+                  <%= @order == 'ASC' ? 'selected' : '' %>
+          >
+            ASC
+          </option>
+        </select>
+      </div>
     </div>
   </div>
   <div class="row">
